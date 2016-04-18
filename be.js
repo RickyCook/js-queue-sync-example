@@ -58,10 +58,10 @@ function replenishQueue() {
             return new Promise(function(thisResolve, thisReject) {
                 videoUrl().then(function(url) {
                     videoDuration(url).then(function(duration) {
-                        var firstVideo = state.queueTimes.length === 0
-                        var lastStartTime = firstVideo ?
+                        var isFirst = state.queueTimes.length === 0
+                        var lastStartTime = isFirst ?
                             null : _.last(state.queueTimes)
-                        var thisStartTime = firstVideo ?
+                        var thisStartTime = isFirst ?
                             Date.now() + FIRST_DELAY :
                             (
                                 lastStartTime +
