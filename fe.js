@@ -16,6 +16,7 @@ var state = {
     queue: []
 }
 
+// Wrapper to load, and parse request body in 1 promise
 function handleGenericAjax(promise) {
     var returnPromise = new Promise(function(resolve, reject) {
         promise.then(function(res) {
@@ -43,7 +44,12 @@ function handleGenericAjax(promise) {
     return returnPromise
 }
 
-/* Delta updates */
+/* Delta updates
+ *   The delta keeps the time in sync between client and server. Because we
+ *   get the start time in server time, we need to convert that to client time
+ *   for when to start the video. The delta simply tells us how many ms to add,
+ *   or take away to keep sync
+ */
 function handleTimeUpdate(promise) {
     handleGenericAjax(promise)
         .then(function(text) {
@@ -58,7 +64,10 @@ setInterval(function() {
     handleTimeUpdate(fetch('/time'))
 }, DELTA_UPDATE_FREQ)
 
-/* Fetch videos */
+/* Fetch videos
+ *   Manages the queue for us. This will ensure that we always have a queue
+ *   with `QUEUE_LENGTH` videos in it
+ */
 function handleFetchVideo(promise) {
     handleGenericAjax(promise)
         .then(function(json) {
@@ -67,8 +76,10 @@ function handleFetchVideo(promise) {
             // Maybe start buffering here?
 
             if (state.queue.length < QUEUE_LENGTH) {
+                // Not full; load more
                 replenishQueue()
             } else {
+                // Full queue; start playing
                 ensurePlaying()
             }
         })
@@ -76,13 +87,21 @@ function handleFetchVideo(promise) {
 }
 
 function replenishQueue() {
+    // Fetch the next video after the last video that we have (or the next
+    // after Jan 1st 1970; aka the head of the queue ;) )
     let lastTs = state.queue.length === 0 ? 0 : _.last(state.queue).start
     handleFetchVideo(fetch('/video?after=' + lastTs))
 }
 
+// Start replenishing right away
 replenishQueue()
 
-/* Play videos */
+/* Play videos
+ *   Get and remove the first video in the queue, trigger a queue
+ *   replenishment to replace the video. New start time is the time
+ *   the server told us +- the delta. Set timer to start the video at the
+ *   correct time, and also queue the next video
+ */
 function uiPlayVideo(url) {
     console.log('Playing video', url)
 }
