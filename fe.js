@@ -1,17 +1,17 @@
-_ = require('lodash')
-fetch = require('isomorphic-fetch')
+var _ = require('lodash')
+var fetch = require('isomorphic-fetch')
 
-Promise = require('es6-promise').Promise
+var Promise = require('es6-promise').Promise
 
-DELTA_UPDATE_FREQ = 30000
-TRANSITIONS: [
+var DELTA_UPDATE_FREQ = 30000
+var TRANSITIONS: [
     'http://t1',
     'http://t2',
     'http://t3'
 ]
-QUEUE_LENGTH = 2
+var QUEUE_LENGTH = 2
 
-state = {
+var state = {
     playing: false,
     queue: []
 }

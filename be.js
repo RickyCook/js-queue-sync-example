@@ -9,9 +9,9 @@ var config = require('./webpack.config.js')
 var app = express()
 var compiler = webpack(config)
 
-FIRST_DELAY = 5000
-TRANSITION_DELAY = 400
-QUEUE_LENGTH = 5
+var FIRST_DELAY = 5000
+var TRANSITION_DELAY = 400
+var QUEUE_LENGTH = 5
 
 var state = {
     queue: {},
